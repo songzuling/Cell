@@ -9,16 +9,14 @@
 
 typedef struct
 {
-  uint32_t  CanID;              /*Can 总线的ID*/
-  uint8_t   Row;                /*单元体的行编号*/
-  uint32_t  Column;             /*单元体的列编号*/
-  uint8_t   RequestIdEnable;    /*请求ID和addr使能标志*/
-  uint8_t   AllocaOneLayerDone; /*分配一层完成*/
-  uint8_t   Deliver;            /*出货*/
-  uint8_t   GoodsCount;         /*要求出货的数量*/
-  uint8_t   ReceiveRow;         /*接收到的出货行*/
-  uint16_t  ReceiveColumn;      /*接收到的出货列*/
-  uint8_t   IsZAxisReady;       /*z轴传送带是否已经准备好接收货物*/
+  uint32_t  CanID;           /*Can 总线的ID*/
+  uint8_t   Row;             /*单元体的行编号*/
+  uint32_t  Column;          /*单元体的列编号*/
+  uint8_t   RequestIdEnable; /*请求ID和addr使能标志*/
+  uint8_t   Deliver;         /*出货*/
+  uint8_t   GoodsCount;      /*要求出货的数量*/
+  uint16_t  AddrReceive;     /*接收到的出货addr，即主机要求哪个单元体出货*/
+  uint8_t   IsZAxisReady;    /*z轴传送带是否已经准备好接收货物*/
   
   KeyTypedef GoodsSwitch;    /*检测货物的开关*/
 }CellTypeDef;

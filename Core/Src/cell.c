@@ -9,9 +9,10 @@ static void Delay(uint32_t ms);
 
 void Cell_Init(CAN_HandleTypeDef *hcan)
 {
-  Cell.Addr = 0U;
+  Cell.Column = 0U;
   Cell.CanID = 0U;  
   Cell.RequestIdEnable = 0U;  
+  Cell.AllocaOneLayerDone = 0U;
   
   Cell.GoodsSwitch.OnKeyDownEnable = 1;
   Cell.GoodsSwitch.OnKeyPressEnable = 0;
@@ -30,7 +31,7 @@ void Cell_Init(CAN_HandleTypeDef *hcan)
   }
   
   /*Flash里面没有存有id或者addr*/
-  if( (0==Cell.Addr) || (0==Cell.CanID) )
+  if( (0==Cell.Column) || (0==Cell.CanID) )
   {
     //RepuestIdAndAddr(cell, hcan);
   }
@@ -40,7 +41,17 @@ void Cell_Init(CAN_HandleTypeDef *hcan)
 
 
 HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
-{            
+{    
+  /**/
+  if(Cell.AllocaOneLayerDone)
+  {
+    Cell.AllocaOneLayerDone = CELL_NONE;
+    /*使能下一层板子请求ID*/
+//    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);  
+//    Delay(2);
+//    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);  
+  }
+  
   /*收到主机发送的请求ID使能信号*/
   if(Cell.RequestIdEnable == CELL_REQUEST_ENABLE)
   {      
@@ -54,8 +65,8 @@ HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
   }
   
   /*Data[0]=0x02,请求主机分配ID*/
-  hcan->pTxMsg->Data[0] = CELL_REQUEST_ID;
   hcan->pRxMsg->Data[0] = 0x00;
+  hcan->pTxMsg->Data[0] = CELL_REQUEST_ID;  
   HAL_CAN_Transmit_IT(hcan);
   
   /*等待主机分配的ID发送过来*/    
@@ -70,11 +81,12 @@ HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
   
   /*收到主机分配的ID*/
   hcan->pRxMsg->Data[0] = 0x00;
-  Cell.Addr  = (hcan->pRxMsg->Data[6]<<8)|hcan->pRxMsg->Data[7];
-  Cell.CanID = (hcan->pRxMsg->Data[2]<<24)
-              |(hcan->pRxMsg->Data[3]<<16)
-              |(hcan->pRxMsg->Data[4]<<8)
-              |(hcan->pRxMsg->Data[5]<<0);
+  Cell.Row = hcan->pRxMsg->Data[5];
+  Cell.Column = (hcan->pRxMsg->Data[6]<<8)|hcan->pRxMsg->Data[7];
+  Cell.CanID = (hcan->pRxMsg->Data[1]<<24)
+              |(hcan->pRxMsg->Data[2]<<16)
+              |(hcan->pRxMsg->Data[3]<<8)
+              |(hcan->pRxMsg->Data[4]<<0);
   
   /*保存接收到的ID和ADDR*/
   SaveDataToFlash();
@@ -112,11 +124,16 @@ void CheckCommand(CAN_HandleTypeDef* hcan)
       break;
     case CELL_REQUEST_ENABLE :
       Cell.RequestIdEnable = CELL_REQUEST_ENABLE;
+      Cell.AllocaOneLayerDone = CELL_NONE;
+      break;  
+    case CELL_ALLOCATE_ONE_LAYER_DONE :
+      Cell.AllocaOneLayerDone = CELL_ALLOCATE_ONE_LAYER_DONE;
       break;        
     case CELL_DELIVER :
       Cell.Deliver = CELL_DELIVER;
-      Cell.AddrReceive = (hcan->pRxMsg->Data[6]<<8)|hcan->pRxMsg->Data[7];    
-      Cell.GoodsCount = hcan->pRxMsg->Data[5];
+      Cell.ReceiveRow = hcan->pRxMsg->Data[5];  
+      Cell.ReceiveColumn = (hcan->pRxMsg->Data[6]<<8)|hcan->pRxMsg->Data[7];    
+      Cell.GoodsCount = hcan->pRxMsg->Data[4];
       break;
     default:;
       break;
@@ -132,7 +149,7 @@ void Deliver(CAN_HandleTypeDef* hcan)
   {
     Cell.Deliver = 0;   
     /*如果是该单元体出货*/
-    if(Cell.AddrReceive == Cell.Addr)
+    if( (Cell.ReceiveRow==Cell.Row) && (Cell.ReceiveColumn==Cell.Column) )
     {
       uint8_t n = Cell.GoodsCount;
       uint8_t done = 0;      
@@ -170,8 +187,8 @@ void Deliver(CAN_HandleTypeDef* hcan)
             
       /*通知主机出货完成*/
       hcan->pTxMsg->Data[0] = CELL_DELIVER_DONE;
-      hcan->pTxMsg->Data[6] = (uint8_t) (0xFF & (Cell.Addr>>8) );  
-      hcan->pTxMsg->Data[7] = (uint8_t) (0xFF & (Cell.Addr>>0) );  
+      hcan->pTxMsg->Data[6] = (uint8_t) (0xFF & (Cell.Column>>8) );  
+      hcan->pTxMsg->Data[7] = (uint8_t) (0xFF & (Cell.Column>>0) );  
       int retrycnt = 10;
       while( HAL_OK != HAL_CAN_Transmit_IT(hcan) && (retrycnt-->0))
       {
@@ -223,15 +240,15 @@ void MoveFlashBufferData(uint8_t dir)
 {
   if(dir)
   {
-    FlashDataBuffer[0] = Cell.Addr;
-    FlashDataBuffer[1] = Cell.CanID;
-    FlashDataBuffer[2] = 0;     
+    FlashDataBuffer[0] = Cell.Row;
+    FlashDataBuffer[1] = Cell.Column;
+    FlashDataBuffer[2] = Cell.CanID;     
   }
   else
   {
-    Cell.Addr  = FlashDataBuffer[0];
-    Cell.CanID = FlashDataBuffer[1];   
-    // = FlashDataBuffer[2];   
+    Cell.Row = FlashDataBuffer[0];
+    Cell.Column = FlashDataBuffer[1];   
+    Cell.CanID = FlashDataBuffer[2];   
   }
   return;
 }
