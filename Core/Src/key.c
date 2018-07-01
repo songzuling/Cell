@@ -1,0 +1,95 @@
+
+#include "key.h"
+
+
+void KeyScan(KeyTypedef *key,uint8_t scanInterval ,uint8_t isKeyPress)
+{
+  //³õÊ¼»¯°´¼ü¼ì²â
+  if(!(key->InitDisable))
+  {
+    key->DownCnt = 0;
+		key->LongPressCnt = 0;
+    key->InitDisable = 1;
+    key->IsDown = 0;
+//		key->EventOnKeyDown = NULL;
+//		key->EventOnKeyUp = NULL;
+//		key->EventOnDoubleClick = NULL;
+//		key->EventOnKeyPress = NULL;
+  }
+  
+  key->Tick += scanInterval;
+  if(isKeyPress)
+  {
+    key->DownCnt += scanInterval;
+    if((key->DownCnt >= 20) && !key->IsDown)
+    {
+      key->IsDown = 1;
+      key->UpCnt = 0;       
+      key->ClickCheckFlag = !key->ClickCheckFlag;
+      if(key->ClickCheckFlag)
+      {
+        key->Click_S_Time = key->Tick;
+      }
+      else
+      {
+        key->Click_E_Time = key->Tick;
+      }      
+			if(key->OnKeyDownEnable)
+			{
+        if((key->Click_E_Time > key->Click_S_Time)&&((key->Click_E_Time - key->Click_S_Time) > key->CheckAgainInterval) )
+				{
+          key->EventOnKeyDown();
+				}
+				else if((key->Click_S_Time > key->Click_E_Time)&&((key->Click_S_Time - key->Click_E_Time) > key->CheckAgainInterval) )
+				{
+          key->EventOnKeyDown();
+				}	    
+			}    
+      if(key->OnDoubleClickEnable)
+			{			
+				if((key->Click_E_Time > key->Click_S_Time)&&((key->Click_E_Time - key->Click_S_Time) < 200) )
+				{
+					key->EventOnDoubleClick();
+				}
+				else if((key->Click_S_Time > key->Click_E_Time)&&((key->Click_S_Time - key->Click_E_Time) < 200) )
+				{
+					key->EventOnDoubleClick();
+				}
+			}
+    }
+    if(key->DownCnt >= 400)
+		{
+			key->IsLongPress = 1;
+		}
+		if(key->IsLongPress && key->OnKeyPressEnable)
+		{
+			key->LongPressCnt += scanInterval;
+			if(key->LongPressCnt >= 80)
+			{
+				key->EventOnKeyPress();
+				key->LongPressCnt = 0;				
+			}
+		}
+  }
+  else if(!isKeyPress)
+  {
+    key->UpCnt += scanInterval;
+    if(key->UpCnt >= 20)
+    {
+      key->UpCnt = 20;
+      if((key->IsDown) && (key->OnKeyUpEnable))
+      {
+        key->EventOnKeyUp();
+      }
+      key->DownCnt = 0;
+      key->LongPressCnt = 0;
+      key->IsDown = 0;
+      key->IsLongPress = 0;
+    }
+  }
+  else
+  {
+  }
+  return;
+}
+
