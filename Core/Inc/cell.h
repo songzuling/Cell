@@ -25,6 +25,8 @@ typedef struct
 
 enum{
   CELL_NONE = 0U,
+  CELL_RESET,                   /*复位单元体*/
+  CELL_RESET_SYSTEM,            /*复位单元体系统*/
   CELL_REQUEST_ENABLE,          /*使能请求ID*/
   CELL_REQUEST_ID,              /*请求分配ID*/
   CELL_ALLOCATE_ONE_LAYER_DONE, /*分配一层完成*/
@@ -47,4 +49,5 @@ void Deliver(CAN_HandleTypeDef* hcan);
 HAL_StatusTypeDef SaveDataToFlash(void);
 HAL_StatusTypeDef ReadDataFromFlash(void);
 void SetDuty(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t duty);
+void CellReset(void);
 #endif
