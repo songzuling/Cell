@@ -142,7 +142,7 @@ void CheckCommand(CAN_HandleTypeDef* hcan)
         NVIC_SystemReset();
         break;
       default:;
-      break;
+        break;
     }    
     return;
 }

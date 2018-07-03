@@ -11,10 +11,6 @@ void KeyScan(KeyTypedef *key,uint8_t scanInterval ,uint8_t isKeyPress)
 		key->LongPressCnt = 0;
     key->InitDisable = 1;
     key->IsDown = 0;
-//		key->EventOnKeyDown = NULL;
-//		key->EventOnKeyUp = NULL;
-//		key->EventOnDoubleClick = NULL;
-//		key->EventOnKeyPress = NULL;
   }
   
   key->Tick += scanInterval;

@@ -20,7 +20,7 @@ typedef struct
   uint16_t  ReceiveColumn;      /*接收到的出货列*/
   uint8_t   IsZAxisReady;       /*z轴传送带是否已经准备好接收货物*/
   
-  KeyTypedef GoodsSwitch;    /*检测货物的开关*/
+  KeyTypedef GoodsSwitch;       /*检测货物的开关*/
 }CellTypeDef;
 
 enum{

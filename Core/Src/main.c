@@ -385,21 +385,33 @@ static void CAN_Filter_Init(void)
   hcan.pRxMsg->DLC = 8;
   hcan.pRxMsg->IDE = CAN_ID_EXT;
   hcan.pRxMsg->RTR = CAN_RTR_DATA;  
-    
-  CAN_FilterConfTypeDef sFilterConfig;  
-  uint32_t StdId = 0;                                   //这里写入两个CAN ID，一个位标准CAN ID  
-  uint32_t ExtId = 1;                                   //一个位扩展CAN ID  
   
-  sFilterConfig.FilterNumber = 0;                       //使用过滤器0  
-  sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;     //设为列表模式  
-  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;    //配置为32位宽  
-  sFilterConfig.FilterIdHigh = StdId<<5;                //基本ID放入到STID中  
-  sFilterConfig.FilterIdLow = 0|CAN_ID_STD;             //设置IDE位为0  
-  sFilterConfig.FilterMaskIdHigh = ((ExtId<<3)>>16)&0xFFFF;  
-  sFilterConfig.FilterMaskIdLow = (ExtId<<3)&0xFFFF|CAN_ID_EXT;   //设置IDE位为1  
-  sFilterConfig.FilterFIFOAssignment = 0;               //接收到的报文放入到FIFO0中  
-  sFilterConfig.FilterActivation = ENABLE;  
-  sFilterConfig.BankNumber = 14;  
+  
+  CAN_FilterConfTypeDef  sFilterConfig;
+  //定义一组扩展CAN ID用来测试
+  uint32_t ExtIdArray[8] ={0,1,2,3,4,5,6,7};
+  uint32_t mask,num,tmp,i;
+  
+  sFilterConfig.FilterNumber = 3; //使用过滤器3
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK; //配置为掩码模式
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT; //设为32位宽
+  sFilterConfig.FilterIdHigh = ((ExtIdArray[0]<<3) >>16) &0xFFFF;//数组任意一个成员都可以作为验证码
+  sFilterConfig.FilterIdLow = ((ExtIdArray[0]<<3)&0xFFFF) | CAN_ID_EXT;
+  
+  mask =0x1FFFFFFF;
+  num =sizeof(ExtIdArray)/sizeof(ExtIdArray[0]);
+  for(i =0; i<num; i++) //屏蔽码位数组各成员相互同或的结果
+  {
+    tmp =ExtIdArray[i] ^ (~ExtIdArray[0]); //都与第一个数据成员进行同或操作
+    mask &=tmp;
+  }
+  mask <<=3; //对齐寄存器
+  sFilterConfig.FilterMaskIdHigh = (mask>>16)&0xFFFF;
+  sFilterConfig.FilterMaskIdLow = (mask&0xFFFF)|0x02; //只接收数据帧
+  sFilterConfig.FilterFIFOAssignment = 0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.BankNumber = 14;
+  
   
   HAL_CAN_ConfigFilter(&hcan, &sFilterConfig);
   

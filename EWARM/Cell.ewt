@@ -1172,6 +1172,9 @@
         <name>$PROJ_DIR$\..\Core\Src\cell.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Core\Inc\cell.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Core\Src\freertos.c</name>
       </file>
       <file>

@@ -58,7 +58,7 @@
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
-#define PWM_FREQUENCY 6000
+#define PWM_FREQUENCY 10000
 
 /* ########################## Assert Selection ############################## */
 /**
