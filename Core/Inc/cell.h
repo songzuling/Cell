@@ -14,8 +14,8 @@ typedef struct
   uint32_t  Column;             /*单元体的列编号*/
   uint8_t   RequestIdEnable;    /*请求ID和addr使能标志*/
   uint8_t   AllocaOneLayerDone; /*分配一层完成*/
-  uint8_t   Deliver;            /*出货*/
-  uint8_t   GoodsCount;         /*要求出货的数量*/
+  uint8_t   IsDeliver;          /*出货*/
+  uint32_t  GoodsCount;         /*要求出货的数量*/
   uint8_t   ReceiveRow;         /*接收到的出货行*/
   uint16_t  ReceiveColumn;      /*接收到的出货列*/
   uint8_t   IsZAxisReady;       /*z轴传送带是否已经准备好接收货物*/
@@ -24,15 +24,15 @@ typedef struct
 }CellTypeDef;
 
 enum{
-  CELL_NONE = 0U,
-  CELL_RESET,                   /*复位单元体*/
-  CELL_RESET_SYSTEM,            /*复位单元体系统*/
-  CELL_REQUEST_ENABLE,          /*使能请求ID*/
-  CELL_REQUEST_ID,              /*请求分配ID*/
-  CELL_ALLOCATE_ONE_LAYER_DONE, /*分配一层完成*/
-  CELL_GET_ID,                  /*收到ID*/
-  CELL_DELIVER,                 /*出货命令*/
-  CELL_DELIVER_DONE,            /*单元体出货完成*/
+  CMD_NONE = 0U,
+  CMD_MASTER_RESET_CELL,              /*主机复位单元体*/
+  CMD_MASTER_RESET_CELL_SYSTEM,       /*主机复位单元体系统*/
+  CMD_MASTER_REQUEST_ENABLE,          /*主机使能请求ID*/
+  CMD_CELL_REQUEST_ID,                /*单元体请求分配ID*/
+  CMD_MASTER_ALLOCATE_ONE_LAYER_DONE, /*主机分配一层完成*/
+  CMD_MASTER_SEND_ID,                 /*主机发送ID*/
+  CMD_MASTER_DELIVER,                 /*主机出货命令*/
+  CMD_CELL_DELIVER_DONE,              /*单元体出货完成*/
 };
 
 extern CellTypeDef Cell;
@@ -40,7 +40,7 @@ extern CellTypeDef Cell;
 void OnSwitchDown(void);
 void OnSwitchUp(void);
 void DoNothing(void);
-void CheckCommand(CAN_HandleTypeDef* hcan);
+void PraseCommand(CAN_HandleTypeDef* hcan);
 void Cell_Init(CAN_HandleTypeDef *hcan);
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan);
 HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan);
