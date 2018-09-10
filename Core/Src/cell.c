@@ -4,56 +4,58 @@
 
 CellTypeDef Cell;
 extern TIM_HandleTypeDef htim4;
-static void Delay(uint32_t ms);
-
 
 void Cell_Init(CAN_HandleTypeDef *hcan)
-{
+{   
+  Cell.Column = 0U;
+  Cell.CanID = 0U;  
+  Cell.RequestIdEnable = 0U;  
+  Cell.AllocaOneLayerDone = 0U;
   
+  Cell.GoodsSwitch.CheckAgainInterval = 50;
+  Cell.GoodsSwitch.EventOnKeyDown = DoNothing;
+  Cell.GoodsSwitch.EventOnDoubleClick = DoNothing;
+  Cell.GoodsSwitch.EventOnKeyPress = DoNothing;
+  Cell.GoodsSwitch.EventOnKeyUp = DoNothing;
   
-    Cell.Column = 0U;
-    Cell.CanID = 0U;  
-    Cell.RequestIdEnable = 0U;  
-    Cell.AllocaOneLayerDone = 0U;
+  for(int i=0; i<2; i++)
+  {
+    Cell.Key[i].Index = i;
+    Cell.Key[i].EventOnDoubleClick = DoNothing;
+    Cell.Key[i].EventOnKeyDown = DoNothing;
+    Cell.Key[i].EventOnKeyPress = DoNothing;
+    Cell.Key[i].EventOnKeyUp = DoNothing;
+  }
+  
+  /*从flash读取保存的数据*/
+  if(HAL_OK != ReadDataFromFlash())
+  {
     
-    Cell.GoodsSwitch.OnKeyDownEnable = 1;
-    Cell.GoodsSwitch.OnKeyPressEnable = 0;
-    Cell.GoodsSwitch.OnDoubleClickEnable = 0;
-    Cell.GoodsSwitch.OnKeyUpEnable = 1;
-    Cell.GoodsSwitch.CheckAgainInterval = 50;
-    Cell.GoodsSwitch.EventOnKeyDown = DoNothing;
-    Cell.GoodsSwitch.EventOnDoubleClick = DoNothing;
-    Cell.GoodsSwitch.EventOnKeyPress = DoNothing;
-    Cell.GoodsSwitch.EventOnKeyUp = DoNothing;
-    
-    /*从flash读取保存的数据*/
-    if(HAL_OK != ReadDataFromFlash())
-    {
-        
-    }
-    
-    /*Flash里面没有存有id或者addr*/
-    if( (0==Cell.Column) || (0==Cell.CanID) )
-    {
-        //RepuestIdAndAddr(cell, hcan);
-    }
-    
-    DRIVER_ENABLE;
-    
-    return;
+  }
+  
+  /*Flash里面没有存有id或者addr*/
+  if( (0==Cell.Column) || (0==Cell.CanID) )
+  {
+    //RepuestIdAndAddr(cell, hcan);
+  }
+  
+  DRIVER_ENABLE;
+  
+  LED1_ON;
+  Delay(50);
+  LED1_OFF;
+  
+  return;
 }
 
 
 HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
 {    
-    /**/
+    /*使能下一层板子请求ID*/
     if(Cell.AllocaOneLayerDone == CMD_MASTER_ALLOCATE_ONE_LAYER_DONE)
     {
-        Cell.AllocaOneLayerDone = CMD_NONE;
-        /*使能下一层板子请求ID*/
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_SET);  
-        Delay(20);
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);  
+        Cell.AllocaOneLayerDone = CMD_NONE;       
+        ENABLE_NEXT_LAYER;
     }
     
     /*收到主机发送的请求ID使能信号*/
@@ -61,14 +63,14 @@ HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
     {      
         Cell.RequestIdEnable = CMD_NONE;
         /*等待引脚使能信号*/
-        while(GPIO_PIN_RESET == HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10));
+        while(GPIO_PIN_RESET == HAL_GPIO_ReadPin(READ_ENABLE_PORT, READ_ENABLE_PIN));
     }
     else
     {
         return HAL_OK;
     }
     
-    /*Data[0]=0x02,请求主机分配ID*/
+    /*请求主机分配ID*/
     hcan->pRxMsg->Data[0] = 0x00;
     hcan->pTxMsg->Data[0] = CMD_CELL_REQUEST_ID;  
     HAL_CAN_Transmit_IT(hcan);
@@ -98,16 +100,17 @@ HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
     /*更新can的id*/
     hcan->pRxMsg->ExtId = Cell.CanID;
     
-    /*指示灯*/
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);   
-    Delay(50);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);  
+    /*使能下一个板子请求ID之前将这个清零，要不然从第二层开始逻辑会乱*/
+    Cell.AllocaOneLayerDone = CMD_NONE;  
     
     /*使能下一个板子请求ID*/
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);  
-    Delay(2);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);   
+    ENABLE_NEXT_BOARD;
     
+    /*指示灯*/
+    LED1_ON;   
+    Delay(200);
+    LED1_OFF;  
+         
     return HAL_OK;
 }
 
@@ -118,10 +121,21 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     PraseCommand(hcan);  
 }
 
-int rxcnt = 0;
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
+{
+  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+}
+
+void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef *hcan)
+{
+  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+}
+
+
+
+
 void PraseCommand(CAN_HandleTypeDef* hcan)
 {
-    rxcnt++;
     switch(hcan->pRxMsg->Data[0])
     {
       case CMD_NONE:;
@@ -150,22 +164,18 @@ void PraseCommand(CAN_HandleTypeDef* hcan)
     }    
     return;
 }
-
-// 复位单元体
+ 
+/*
+ * @brief  复位单元体,转动单元体的电机，直到检测货物的开关弹起，回到初始状态
+ * @param  空
+ * @retval 空
+ */
 void CellReset(void)
 {
-    while(Cell.GoodsSwitch.IsDown)
-    {
-        SetDuty(&htim4,TIM_CHANNEL_1,100);
-        SetDuty(&htim4,TIM_CHANNEL_2,0);
-        SetDuty(&htim4,TIM_CHANNEL_3,100);
-        SetDuty(&htim4,TIM_CHANNEL_4,0);
-    }
-    SetDuty(&htim4,TIM_CHANNEL_1,0);
-    SetDuty(&htim4,TIM_CHANNEL_2,0);
-    SetDuty(&htim4,TIM_CHANNEL_3,0);
-    SetDuty(&htim4,TIM_CHANNEL_4,0);
-    return;
+  START_MOTOR(100);
+  while(Cell.GoodsSwitch.IsDown);
+  START_MOTOR(0);
+  return;
 }
 
 /*
@@ -175,51 +185,48 @@ void CellReset(void)
  */
 void Deliver(CAN_HandleTypeDef* hcan)
 {
-    if(Cell.IsDeliver)
+    // TODO:这里z轴到达不能这样写，下一步去完善
+    if((CMD_MASTER_DELIVER==Cell.IsDeliver) )//;//&& (hcan->pRxMsg->Data[0] == CMD_ZAXIS_REACH))
     {
-        Cell.IsDeliver = 0;   
+        Cell.IsDeliver = CMD_NONE;   
         /*如果是该单元体出货*/
         if( (Cell.ReceiveRow==Cell.Row) && (Cell.ReceiveColumn==Cell.Column) )
         {
-          ///////////////////////////////
-          while(hcan->pRxMsg->Data[0] != CMD_ZAXIS_REACH){};
-          
-          HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);    
+          LED1_ON;
           uint8_t n = Cell.GoodsCount;
           uint8_t done = 0;      
           for(uint8_t i=0; i<n; i++)
           {
             done = 0;
             uint32_t tickstart = HAL_GetTick();                
-            SetDuty(&htim4,TIM_CHANNEL_1,100);
-            SetDuty(&htim4,TIM_CHANNEL_2,0);
-            SetDuty(&htim4,TIM_CHANNEL_3,100);
-            SetDuty(&htim4,TIM_CHANNEL_4,0);
+            START_MOTOR(100);
             while(!done)
             {          
               if(Cell.GoodsSwitch.IsDown)
               {
                 done = 1;
-                while(Cell.GoodsSwitch.IsDown){};
+                while(Cell.GoodsSwitch.IsDown)
+                { // TODO:这里的超时时间需要考虑，就是单个货物出货超时时间
+                  if(HAL_GetTick() - tickstart > 2000)
+                  {
+                    break;
+                  }
+                };
                 Cell.GoodsCount--;
               }                         
-              ////////////////////////////////////////////// 
-              //  超时未检测到货物被送出，超时时间需要考量
-              ////////////////////////////////////////////// 
-              if(HAL_GetTick() - tickstart > 20000)
+              
+              // TODO: 超时未检测到货物被送出，超时时间需要考量             
+              if(HAL_GetTick() - tickstart > 500)
               {
-                //break;
+                break;
               }
             }// end while       
           }// end for 
-          //////////////////////////////////////////////////////////////
-          HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET); 
+          
+          LED1_OFF;
           
           /*货物送完，电机停转*/
-          SetDuty(&htim4,TIM_CHANNEL_1,0);
-          SetDuty(&htim4,TIM_CHANNEL_2,0);
-          SetDuty(&htim4,TIM_CHANNEL_3,0);
-          SetDuty(&htim4,TIM_CHANNEL_4,0);
+          START_MOTOR(0);
           
           /*通知主机出货完成*/
           hcan->pTxMsg->Data[0] = CMD_CELL_DELIVER_DONE;
@@ -234,7 +241,7 @@ void Deliver(CAN_HandleTypeDef* hcan)
           /*通知主机失败*/
           if(retrycnt < 0)
           {
-            
+            // TODO:失败处理
           }
         }
         return ;
@@ -242,12 +249,21 @@ void Deliver(CAN_HandleTypeDef* hcan)
     return;
 }
 
-void DoNothing(void)
+void DoNothing(int i)
 {
     return;
 }
 
-static void Delay(uint32_t ms)
+// 扫描开关
+void SwitchScan(void)
+{
+  KeyScan(&(Cell.GoodsSwitch),1,HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0));
+  KeyScan(&(Cell.Key[0]),1,!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0));
+  KeyScan(&(Cell.Key[1]),1,!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1));  
+  return;
+}
+
+void Delay(uint32_t ms)
 {
     uint32_t tickstart = HAL_GetTick();
     
