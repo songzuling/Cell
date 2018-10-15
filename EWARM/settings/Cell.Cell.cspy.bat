@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"D:\Program Files (x86)\IAR Systems\Embedded Workbench 7.4\common\bin\cspybat" -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.general.xcl" --backend -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.driver.xcl" 
+"E:\IAR8.3\common\bin\cspybat" -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.general.xcl" --backend -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"D:\Program Files (x86)\IAR Systems\Embedded Workbench 7.4\common\bin\cspybat" -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.general.xcl" "--debug_file=%~1" --backend -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.driver.xcl" 
+"E:\IAR8.3\common\bin\cspybat" -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.general.xcl" "--debug_file=%~1" --backend -f "F:\New Sale System\Code\Cell\EWARM\settings\Cell.Cell.driver.xcl" 
 
 @echo off 
 :end

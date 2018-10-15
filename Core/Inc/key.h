@@ -9,20 +9,17 @@
 
 typedef struct
 {
+  uint8_t Index;
   uint8_t InitDisable;
   uint8_t IsDown;
+  uint8_t IsUp;
 	uint8_t IsLongPress;
 	uint8_t ClickCheckFlag;
   
-	uint8_t OnKeyDownEnable;
-	uint8_t OnKeyUpEnable;
-  uint8_t OnKeyPressEnable;
-	uint8_t OnDoubleClickEnable;
-  
-	void (*EventOnKeyDown)();
-  void (*EventOnKeyUp)();
-	void (*EventOnKeyPress)();
-	void (*EventOnDoubleClick)();
+	void (*EventOnKeyDown)(int index);
+  void (*EventOnKeyUp)(int index);
+	void (*EventOnKeyPress)(int index);
+	void (*EventOnDoubleClick)(int index);
 	uint32_t Click_S_Time;
 	uint32_t Click_E_Time;
 	uint32_t Tick;

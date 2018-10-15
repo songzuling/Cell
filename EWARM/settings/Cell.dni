@@ -1,10 +1,10 @@
 [StLinkDriver]
-stlinkserialNo=2798FD0D
+stlinkserialNo=051017A7
 stlinkfoundProbes=
 CStepIntDis=_ 0
 LeaveTargetRunning=_ 0
 [DebugChecksum]
-Checksum=562509680
+Checksum=-2135891069
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -45,19 +45,14 @@ ITMlogFile=$PROJ_DIR$\ITM.log
 Fmt0=CAN_TypeDef-FA1R	4	0
 Fmt1=CellTypeDef-AllocaOneLayerDone	3	0
 Fmt2=CellTypeDef-Column	3	0
-Fmt3=CellTypeDef-Deliver	3	0
-Fmt4=CellTypeDef-GoodsCount	3	0
-Fmt5=CellTypeDef-IsZAxisReady	3	0
-Fmt6=CellTypeDef-ReceiveRow	3	0
-Fmt7=CellTypeDef-RequestIdEnable	3	0
-Fmt8=CellTypeDef-Row	3	0
-Fmt9=KeyTypedef-InitDisable	3	0
-Fmt10=KeyTypedef-IsDown	3	0
-Fmt11=KeyTypedef-IsLongPress	3	0
-Fmt12=KeyTypedef-OnDoubleClickEnable	3	0
-Fmt13=KeyTypedef-OnKeyDownEnable	3	0
-Fmt14=KeyTypedef-OnKeyPressEnable	3	0
-Fmt15=KeyTypedef-OnKeyUpEnable	3	0
+Fmt3=CellTypeDef-GoodsCount	3	0
+Fmt4=CellTypeDef-IsZAxisReady	3	0
+Fmt5=CellTypeDef-ReceiveRow	3	0
+Fmt6=CellTypeDef-RequestIdEnable	3	0
+Fmt7=CellTypeDef-Row	3	0
+Fmt8=KeyTypedef-InitDisable	3	0
+Fmt9=KeyTypedef-IsDown	3	0
+Fmt10=KeyTypedef-IsLongPress	3	0
 [array_types]
 Fmt0=uint8_t[8]	3	0
 [watch_formats]

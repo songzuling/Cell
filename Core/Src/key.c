@@ -20,6 +20,7 @@ void KeyScan(KeyTypedef *key,uint8_t scanInterval ,uint8_t isKeyPress)
     if((key->DownCnt >= 20) && !key->IsDown)
     {
       key->IsDown = 1;
+      key->IsUp = 0;
       key->UpCnt = 0;       
       key->ClickCheckFlag = !key->ClickCheckFlag;
       if(key->ClickCheckFlag)
@@ -30,39 +31,34 @@ void KeyScan(KeyTypedef *key,uint8_t scanInterval ,uint8_t isKeyPress)
       {
         key->Click_E_Time = key->Tick;
       }      
-			if(key->OnKeyDownEnable)
-			{
-        if((key->Click_E_Time > key->Click_S_Time)&&((key->Click_E_Time - key->Click_S_Time) > key->CheckAgainInterval) )
-				{
-          key->EventOnKeyDown();
-				}
-				else if((key->Click_S_Time > key->Click_E_Time)&&((key->Click_S_Time - key->Click_E_Time) > key->CheckAgainInterval) )
-				{
-          key->EventOnKeyDown();
-				}	    
-			}    
-      if(key->OnDoubleClickEnable)
-			{			
-				if((key->Click_E_Time > key->Click_S_Time)&&((key->Click_E_Time - key->Click_S_Time) < 200) )
-				{
-					key->EventOnDoubleClick();
-				}
-				else if((key->Click_S_Time > key->Click_E_Time)&&((key->Click_S_Time - key->Click_E_Time) < 200) )
-				{
-					key->EventOnDoubleClick();
-				}
-			}
+
+      if((key->Click_E_Time > key->Click_S_Time)&&((key->Click_E_Time - key->Click_S_Time) > key->CheckAgainInterval) )
+      {
+        key->EventOnKeyDown(key->Index);
+      }
+      else if((key->Click_S_Time > key->Click_E_Time)&&((key->Click_S_Time - key->Click_E_Time) > key->CheckAgainInterval) )
+      {
+        key->EventOnKeyDown(key->Index);
+      }	      	
+      if((key->Click_E_Time > key->Click_S_Time)&&((key->Click_E_Time - key->Click_S_Time) < 250) )
+      {
+        key->EventOnDoubleClick(key->Index);
+      }
+      else if((key->Click_S_Time > key->Click_E_Time)&&((key->Click_S_Time - key->Click_E_Time) < 250) )
+      {
+        key->EventOnDoubleClick(key->Index);
+      }
     }
     if(key->DownCnt >= 400)
 		{
 			key->IsLongPress = 1;
 		}
-		if(key->IsLongPress && key->OnKeyPressEnable)
+		if(key->IsLongPress)
 		{
 			key->LongPressCnt += scanInterval;
 			if(key->LongPressCnt >= 80)
 			{
-				key->EventOnKeyPress();
+				key->EventOnKeyPress(key->Index);
 				key->LongPressCnt = 0;				
 			}
 		}
@@ -73,9 +69,10 @@ void KeyScan(KeyTypedef *key,uint8_t scanInterval ,uint8_t isKeyPress)
     if(key->UpCnt >= 20)
     {
       key->UpCnt = 20;
-      if((key->IsDown) && (key->OnKeyUpEnable))
+      key->IsUp = 1;
+      if((key->IsDown))
       {
-        key->EventOnKeyUp();
+        key->EventOnKeyUp(key->Index);
       }
       key->DownCnt = 0;
       key->LongPressCnt = 0;

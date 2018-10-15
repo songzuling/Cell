@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
-  <fileVersion>2</fileVersion>
+  <fileVersion>3</fileVersion>
   <configuration>
     <name>Cell</name>
     <toolchain>
@@ -12,7 +11,7 @@
       <name>General</name>
       <archiveVersion>3</archiveVersion>
       <data>
-        <version>24</version>
+        <version>31</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -32,18 +31,8 @@
           <state>0</state>
         </option>
         <option>
-          <name>Input variant</name>
-          <version>3</version>
-          <state>1</state>
-        </option>
-        <option>
           <name>Input description</name>
           <state>Full formatting.</state>
-        </option>
-        <option>
-          <name>Output variant</name>
-          <version>2</version>
-          <state>1</state>
         </option>
         <option>
           <name>Output description</name>
@@ -77,7 +66,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.60.2.11347</state>
+          <state>8.30.1.17146</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -127,7 +116,7 @@
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>24</version>
+          <version>26</version>
           <state>38</state>
         </option>
         <option>
@@ -144,7 +133,7 @@
         </option>
         <option>
           <name>CoreVariant</name>
-          <version>24</version>
+          <version>26</version>
           <state>38</state>
         </option>
         <option>
@@ -167,8 +156,58 @@
         </option>
         <option>
           <name>GFPUCoreSlave2</name>
-          <version>24</version>
+          <version>26</version>
           <state>38</state>
+        </option>
+        <option>
+          <name>OGCMSISPackSelectDevice</name>
+        </option>
+        <option>
+          <name>OgLibHeap</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGLibAdditionalLocale</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGPrintfVariant</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OGPrintfMultibyteSupport</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OGScanfVariant</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OGScanfMultibyteSupport</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>GenLocaleTags</name>
+          <state />
+        </option>
+        <option>
+          <name>GenLocaleDisplayOnly</name>
+          <state />
+        </option>
+        <option>
+          <name>DSPExtension</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>TrustZone</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>TrustZoneModes</name>
+          <version>0</version>
+          <state>0</state>
         </option>
       </data>
     </settings>
@@ -176,7 +215,7 @@
       <name>ICCARM</name>
       <archiveVersion>2</archiveVersion>
       <data>
-        <version>31</version>
+        <version>34</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -226,19 +265,19 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CCDiagRemark</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CCDiagWarning</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CCDiagError</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CCObjPrefix</name>
@@ -267,7 +306,7 @@
         </option>
         <option>
           <name>IExtraOptions</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -279,10 +318,6 @@
         </option>
         <option>
           <name>CCRequirePrototypes</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>CCMultibyteSupport</name>
           <state>0</state>
         </option>
         <option>
@@ -307,7 +342,7 @@
         </option>
         <option>
           <name>PreInclude</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CompilerMisraOverride</name>
@@ -331,10 +366,6 @@
         <option>
           <name>CCCodeSection</name>
           <state>.text</state>
-        </option>
-        <option>
-          <name>IInterwork2</name>
-          <state>0</state>
         </option>
         <option>
           <name>IProcessorMode2</name>
@@ -388,18 +419,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>IccCppDialect</name>
-          <state>2</state>
-        </option>
-        <option>
-          <name>IccExceptions</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>IccRTTI</name>
-          <state>0</state>
-        </option>
-        <option>
           <name>IccStaticDestr</name>
           <state>0</state>
         </option>
@@ -428,13 +447,37 @@
           <name>CCGuardCalls</name>
           <state>1</state>
         </option>
+        <option>
+          <name>CCEncSource</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEncOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEncOutputBom</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCEncInput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccExceptions2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccRTTI2</name>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>AARM</name>
       <archiveVersion>2</archiveVersion>
       <data>
-        <version>9</version>
+        <version>10</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -464,15 +507,15 @@
         </option>
         <option>
           <name>AWarnOne</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>AWarnRange1</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>AWarnRange2</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>ADebug</name>
@@ -484,7 +527,7 @@
         </option>
         <option>
           <name>ADefines</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>AList</name>
@@ -563,10 +606,6 @@
           <state>$FILE_BNAME$.o</state>
         </option>
         <option>
-          <name>AMultibyteSupport</name>
-          <state>0</state>
-        </option>
-        <option>
           <name>ALimitErrorsCheck</name>
           <state>0</state>
         </option>
@@ -588,7 +627,7 @@
         </option>
         <option>
           <name>AExtraOptionsV2</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>AsmNoLiteralPool</name>
@@ -630,29 +669,29 @@
       <name>CUSTOM</name>
       <archiveVersion>3</archiveVersion>
       <data>
-        <extensions></extensions>
-        <cmdline></cmdline>
+        <extensions />
+        <cmdline />
         <hasPrio>0</hasPrio>
       </data>
     </settings>
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data />
     </settings>
     <settings>
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild></prebuild>
-        <postbuild></postbuild>
+        <prebuild />
+        <postbuild />
       </data>
     </settings>
     <settings>
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>17</version>
+        <version>21</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -677,31 +716,31 @@
         </option>
         <option>
           <name>IlinkKeepSymbols</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkRawBinaryFile</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkRawBinarySymbol</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkRawBinarySegment</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkRawBinaryAlign</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkDefines</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -737,7 +776,7 @@
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkEnableRemarks</name>
@@ -745,19 +784,19 @@
         </option>
         <option>
           <name>IlinkSuppressDiags</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkTreatAsRem</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkTreatAsWarn</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkTreatAsErr</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkWarningsAreErrors</name>
@@ -769,7 +808,7 @@
         </option>
         <option>
           <name>IlinkExtraOptions</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>
@@ -781,7 +820,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -916,15 +955,15 @@
         </option>
         <option>
           <name>IlinkStackControlFile</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IlinkStackCallGraphFile</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>CrcAlgorithm</name>
-          <version>0</version>
+          <version>1</version>
           <state>1</state>
         </option>
         <option>
@@ -940,6 +979,34 @@
           <name>IlinkLogCallGraph</name>
           <state>0</state>
         </option>
+        <option>
+          <name>IlinkIcfFile_AltDefault</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkEncInput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkEncOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkEncOutputBom</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkHeapSelect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkLocaleSelect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkTrustzoneImportLibraryOut</name>
+          <state>###Unitialized###</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -951,7 +1018,7 @@
         <debug>1</debug>
         <option>
           <name>IarchiveInputs</name>
-          <state></state>
+          <state />
         </option>
         <option>
           <name>IarchiveOverride</name>
@@ -966,7 +1033,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data />
     </settings>
   </configuration>
   <group>
@@ -992,6 +1059,9 @@
         <name>$PROJ_DIR$\..\Core\Src\key.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Core\Inc\key.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Core\Src\main.c</name>
       </file>
       <file>
@@ -1003,6 +1073,27 @@
       <file>
         <name>$PROJ_DIR$\..\Core\Src\stm32f1xx_it.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$\..\Core\Src\test.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Core\Inc\test.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/main.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/freertos.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/stm32f1xx_it.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/stm32f1xx_hal_msp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/stm32f1xx_hal_timebase_TIM.c</name>
+      </file>
     </group>
   </group>
   <group>
@@ -1011,6 +1102,9 @@
       <name>CMSIS</name>
       <file>
         <name>$PROJ_DIR$\..\Core\Src\system_stm32f1xx.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/system_stm32f1xx.c</name>
       </file>
     </group>
     <group>
@@ -1054,6 +1148,45 @@
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim_ex.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_can.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c</name>
+      </file>
     </group>
   </group>
   <group>
@@ -1090,8 +1223,37 @@
       <file>
         <name>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3/port.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3/portasm.s</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+      </file>
     </group>
   </group>
 </project>
-
 
