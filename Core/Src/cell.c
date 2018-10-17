@@ -5,6 +5,7 @@
 
 CellTypeDef Cell;
 extern TIM_HandleTypeDef htim4;
+extern CAN_HandleTypeDef hcan;
 
 void Cell_Init(CAN_HandleTypeDef *hcan)
 {   
@@ -52,12 +53,7 @@ void Cell_Init(CAN_HandleTypeDef *hcan)
   {
     
   }
-  
-   // TODO:测试用的，实际每个单元体没有100个货物
-  if(Cell.RemainingGoodsNum == 0)
-  {
-    ResetRemainingGoods(100);
-  }
+ 
      
   DISENABLE_DRIVER0;
   DISENABLE_DRIVER1;  
@@ -68,6 +64,28 @@ void Cell_Init(CAN_HandleTypeDef *hcan)
   LED1_OFF;  
   
   return;
+}
+
+/*
+ * 描述：
+ *   CAN 命令处理
+ * 参数：
+ *   空
+ * 返回：
+ *   空
+ */
+void CANCommandHandler(void)
+{
+  // 请求ID
+  RepuestIdAndAddr(&hcan);
+  // 出货处理
+  Deliver(&hcan);   
+  
+  // 设置货物数量并保存
+  SetGoodsNum();
+  
+  // 获取物数量
+  GetGoodsNum();
 }
 
 
@@ -137,25 +155,11 @@ HAL_StatusTypeDef RepuestIdAndAddr(CAN_HandleTypeDef *hcan)
 }
 
 
-void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
-{  
-  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
-  PraseCommand(hcan);  
-}
-
-void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
-{
-  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
-}
-
-void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef *hcan)
-{
-  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
-}
-
-
-
-
+/*
+ * @brief  解析来自can的数据
+ * @param  hcan
+ * @retval 空
+ */
 void PraseCommand(CAN_HandleTypeDef* hcan)
 {
     switch(hcan->pRxMsg->Data[0])
@@ -197,9 +201,30 @@ void PraseCommand(CAN_HandleTypeDef* hcan)
         }
         break;
         
+      /*设置单元体的货物个数*/
+      case CMD_MASTER_SET_GOODS_NUMS:     
+        Cell.ReceiveRow = hcan->pRxMsg->Data[5];  
+        Cell.ReceiveColumn = (hcan->pRxMsg->Data[6]<<8)|hcan->pRxMsg->Data[7];    
+        if( (Cell.ReceiveRow==Cell.Row) && (Cell.ReceiveColumn==Cell.Column) )
+        {          
+          Cell.IsSetGoodsNum = CMD_MASTER_SET_GOODS_NUMS;
+          Cell.RemainingGoodsNum = hcan->pRxMsg->Data[4];
+        }        
+        break;
+        
+      /*获取单元体的货物个数*/
+      case CMD_MASTER_GET_GOODS_NUMS:     
+        Cell.ReceiveRow = hcan->pRxMsg->Data[5];  
+        Cell.ReceiveColumn = (hcan->pRxMsg->Data[6]<<8)|hcan->pRxMsg->Data[7];    
+        if( (Cell.ReceiveRow==Cell.Row) && (Cell.ReceiveColumn==Cell.Column) )
+        {          
+          Cell.IsGetGoodsNum = CMD_MASTER_GET_GOODS_NUMS;          
+        }     
+        break;
+        
       /*复位单元体，出货机构*/
       case CMD_MASTER_RESET_CELL:
-        CellReset();
+        
         break;
         
       /*复位单元体系统*/
@@ -227,10 +252,52 @@ void CellReset(void)
   return;
 }
 
-HAL_StatusTypeDef ResetRemainingGoods(int32_t n)
-{  
-  Cell.RemainingGoodsNum = n;
-  return SaveDataToFlash();
+/*
+ * @brief  设置货物适数量
+ * @param  空
+ * @retval 空
+ */
+void SetGoodsNum(void)
+{
+  if(Cell.IsSetGoodsNum == CMD_MASTER_SET_GOODS_NUMS)
+  {
+    Cell.IsSetGoodsNum = CMD_NONE;
+    hcan.pTxMsg->Data[0] = CMD_MASTER_SET_GOODS_NUMS;
+    hcan.pTxMsg->Data[1] = 0;
+    hcan.pTxMsg->Data[2] = 0;
+    hcan.pTxMsg->Data[3] = 0;
+    hcan.pTxMsg->Data[4] = 0;
+    hcan.pTxMsg->Data[5] = Cell.Row;
+    hcan.pTxMsg->Data[6] = (uint8_t) (0xFF & (Cell.Column>>8));  
+    hcan.pTxMsg->Data[7] = (uint8_t) (0xFF & (Cell.Column>>0));         
+    if(HAL_OK != SaveDataToFlash())
+    {
+      hcan.pTxMsg->Data[0] = CMD_CELL_SAVE_GOODS_FAILED;  
+    }
+    HAL_CAN_Transmit_IT(&hcan);   
+  }   
+}
+
+/*
+ * @brief  获取单元体的货物个数,发送给主机
+ * @param  空
+ * @retval 空
+ */
+void GetGoodsNum(void)
+{
+  if(Cell.IsGetGoodsNum == CMD_MASTER_GET_GOODS_NUMS)
+  {
+    Cell.IsGetGoodsNum = CMD_NONE;
+    hcan.pTxMsg->Data[0] = CMD_MASTER_GET_GOODS_NUMS;
+    hcan.pTxMsg->Data[1] = 0;
+    hcan.pTxMsg->Data[2] = 0;
+    hcan.pTxMsg->Data[3] = 0;
+    hcan.pTxMsg->Data[4] = (uint8_t)Cell.RemainingGoodsNum;
+    hcan.pTxMsg->Data[5] = Cell.Row;
+    hcan.pTxMsg->Data[6] = (uint8_t) (0xFF & (Cell.Column>>8));  
+    hcan.pTxMsg->Data[7] = (uint8_t) (0xFF & (Cell.Column>>0));    
+    HAL_CAN_Transmit_IT(&hcan);    
+  }
 }
 
 /*
@@ -282,12 +349,15 @@ void Deliver(CAN_HandleTypeDef* hcan)
                 if(isTimeOut == 0)
                 {
                   Cell.RemainingGoodsNum--;
-                  /*更新剩余货物量，如果保存失败需要上报*/
-                  // TODO;失败处理
+                  if(Cell.RemainingGoodsNum <= 0)
+                  {
+                    Cell.RemainingGoodsNum = 0; 
+                  }
+                  /*更新剩余货物量，如果保存失败需要上报*/                                         
                   if(HAL_OK != SaveDataToFlash())
                   {
-                    
-                  }
+                    hcan->pTxMsg->Data[0] = CMD_CELL_SAVE_GOODS_FAILED;  
+                  }                  
                 }
                 /*单个货物出货超时*/
                 else
@@ -360,6 +430,23 @@ void Delay(uint32_t ms)
     
     return;
 }
+
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
+{  
+  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+  PraseCommand(hcan);  
+}
+
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
+{
+  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+}
+
+void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef *hcan)
+{
+  HAL_CAN_Receive_IT(hcan, CAN_FIFO0);
+}
+
 
 /////////////////////////////////////////////////////////
 #define  FLASH_ADDR        0x0800F000 
